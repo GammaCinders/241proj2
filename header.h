@@ -22,6 +22,8 @@ struct Item *initInventory(); // Creates and returns empty head Item
 void wipeInventory(struct Item *head); //Free inventory from memory
 void addItem(struct Item *inventoryHead, char *name, char *unit, int price, int quantity); //adds new item after head				   
 void printInventory(struct Item *inventoryHead);
+struct Item *search(struct Item *inventoryHead, char *productName); //returns pointer to item in LL with arg name (null if not found)
+char *formatedProduct(struct Item *inventoryItem); //returns string of properly formatted product info (SHOULD BE FREED AFTER USE)
 
 /* All of the main display / input functions (in main) */
 void handleInput();
