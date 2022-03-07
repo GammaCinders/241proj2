@@ -6,9 +6,11 @@ char *menuOptions[] = {	"Create an empty list",	"Insert a product",
 			"Purchase a product", 	"Sell a product",
 			"Save to file", 	"Exit"};
 
+char searchName[20];
 int isInventoryInit = 0;
 int chosenOption = -1;
 struct Item *inventoryHead;
+struct Item *searcher;
 
 void main() {
 
@@ -48,23 +50,40 @@ void handleInput(int option) {
 			addItem(inventoryHead, name, unit, price, quantity);
 			break;
 
-		//case 3: //Remove item
+		case 3: //Remove item
+			struct Item *beforeSearcher = inventoryHead;
+			printf("Please enter the product name\n");
+			scanf("%s", searchName);
+			
+			searcher = search(inventoryHead, searchName);
+			if(searcher != NULL) {
+				//TODO make sure this works by testing
+				while(beforeSearcher->next != searcher) {
+					beforeSearcher = beforeSearcher->next;	
+				}
+				beforeSearcher->next = searcher->next;
+				free(searcher->name);
+				free(searcher->unit);
+				free(searcher);
+				printf("Product removed\n");
+			} else {
+				printf("Product not found\n");
+			}
+
+			break;
+
 		case 4: //Wipe list
 			wipeInventory(inventoryHead);
-			//inventoryHeade = initInventory(); I guess not doing this rn
+			inventoryHead = NULL;
 			break;
 
 		case 5: //Search for product
-			char searchName[20];
-			struct Item *searcher;
 			printf("Please enter the product name\n");
 			scanf("%s", searchName);
 
 			searcher = search(inventoryHead, searchName);
 			if(searcher != NULL) {
-				//TODO implement formattedProduct string here once finished 
 				printf("Product found: %s %s %d %d\n", searcher->name, searcher->unit, searcher->price, searcher->quantity);
-				//TODO add free() for thing too after
 			} else {
 				printf("Product not found\n");
 			}
