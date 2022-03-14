@@ -28,4 +28,9 @@ struct Item *search(struct Item *inventoryHead, char *productName); //returns po
 void handleInput();
 void printMenu();
 
+/* All of file control functions */
+//TODO update these later
+void saveToFile(struct Item *header);
+//void loadFromFile();
+
 #endif

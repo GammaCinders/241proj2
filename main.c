@@ -75,6 +75,8 @@ void handleInput(int option) {
 		case 4: //Wipe list
 			wipeInventory(inventoryHead);
 			inventoryHead = NULL;
+			printf("Product list wiped\n");
+
 			break;
 
 		case 5: //Search for product
@@ -94,9 +96,41 @@ void handleInput(int option) {
 			printInventory(inventoryHead);	
 			break;
 
-		//case 7: //purchase a product
-		//case 8: //sell product
-		//case 9: //save to file
+		case 7: //purchase a product
+			printf("Please enter the name of the product bought\n");
+			scanf("%s", searchName);
+
+			searcher = search(inventoryHead, searchName);
+			if(searcher != NULL) {
+				searcher->quantity++;
+				printf("%s quantity increased\n", searcher->name);
+			} else {
+				printf("Product not found\n");
+			}
+
+			break;
+
+		case 8: //sell product
+			printf("Please enter the name of the product sold\n");
+			scanf("%s", searchName);
+
+			searcher = search(inventoryHead, searchName);
+			if(searcher != NULL) {
+				if(searcher->quantity > 0) {
+					searcher->quantity--;
+					printf("%s quantity decreased\n", searcher->name);
+				} else {
+					printf("No %s %s left to sell\n", searcher->name, searcher->unit); 
+				}
+			} else {
+				printf("Product not found\n");
+			}
+
+			break;
+
+		case 9: //save to file
+			saveToFile(inventoryHead);
+			printf("Current product information saved to file \"%s\"\n", "productSave.txt");
 	}
 }
 
