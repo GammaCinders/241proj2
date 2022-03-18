@@ -1,24 +1,50 @@
 #include"header.h"
 
+/* Should always be called first */
 struct Item *initInventory() {
-	return (struct Item*)malloc(sizeof(struct Item));
+	struct Item *newHead = (struct Item*)malloc(sizeof(struct Item));
+	newHead->next = NULL;
+	return newHead;
+}
+
+void delNodeAfter(struct Item *node) {
+	if(node == NULL || node->next == NULL) {
+		return;
+	}
+
+	struct Item *toBeDel = node->next;
+	node->next = toBeDel->next;
+	free(toBeDel->name);
+	free(toBeDel->unit);
+	free(toBeDel);
 }
 
 void wipeInventory(struct Item *head) {
-	struct Item *nextItem = head->next;
-
-	while(nextItem != NULL) {
-		free(head->name);
-		free(head->unit);
-		free(head);
-		head = nextItem;
-		nextItem= head->next;
+	if(head == NULL) {
+		return;
 	}
 
-	free(head->name);
-	free(head->unit);
+	while(head->next != NULL) {
+		delNodeAfter(head);
+	}
+
 	free(head);
 }
+
+void printInventory(struct Item *inventoryHead) {
+	if(inventoryHead == NULL || inventoryHead->next == NULL) {
+		return;
+	}
+
+	while(inventoryHead->next != NULL) {
+		inventoryHead = inventoryHead->next;
+		printf("%s %s %d %d\n", inventoryHead->name, inventoryHead->unit, inventoryHead->price, inventoryHead->quantity);
+	}
+}
+
+
+/* ALL METHODS BELOW WILL CRASH THE PROGRAM IF CALLED BEFORE initInventory() */
+
 
 void addItem(struct Item *inventoryHead, char *name, char *unit, int price, int quantity) {
 	struct Item *newItem = (struct Item*)malloc(sizeof(struct Item));
@@ -31,10 +57,11 @@ void addItem(struct Item *inventoryHead, char *name, char *unit, int price, int 
 	inventoryHead->next = newItem;
 }
 
-struct Item *search(struct Item *inventoryHead, char *productName) {
-	inventoryHead = inventoryHead->next;	
-	while(inventoryHead != NULL) {
-		if(strcmp(productName, inventoryHead->name) == 0) {
+//TODO make this always return the node before the desired one so that it can be used for insert and delete
+struct Item *getNodeBefore(struct Item *inventoryHead, char *productName) {
+	while(inventoryHead->next != NULL) {
+		//TODO make sure this works otherwise do '== 0'
+		if(!strcmp(productName, inventoryHead->next->name)) {
 			return inventoryHead;
 		}
 
@@ -44,9 +71,3 @@ struct Item *search(struct Item *inventoryHead, char *productName) {
 	return NULL;
 }
 
-void printInventory(struct Item *inventoryHead) {
-	while(inventoryHead->next != NULL) {
-		inventoryHead = inventoryHead->next;
-		printf("%s %s %d %d\n", inventoryHead->name, inventoryHead->unit, inventoryHead->price, inventoryHead->quantity);
-	}
-}

@@ -7,10 +7,9 @@ char *menuOptions[] = {	"Create an empty list",	"Insert a product",
 			"Save to file", 	"Exit"};
 
 char searchName[20];
-int isInventoryInit = 0;
 int chosenOption = -1;
-struct Item *inventoryHead;
-struct Item *searcher;
+struct Item *inventoryHead = NULL;
+struct Item *searcher = NULL;
 
 void main() {
 
@@ -21,7 +20,10 @@ void main() {
 		handleInput(chosenOption);
 	}
 
-	wipeInventory(inventoryHead);
+	if(inventoryHead != NULL) {
+		wipeInventory(inventoryHead);
+	}
+
 	return;
 }
 
@@ -34,10 +36,8 @@ void handleInput(int option) {
 	}
 
 	switch(option) {
-
 		case 1: //Create empty list
-			//TODO after i create size/len method for LL then do if size<1 then wipeInventory
-			//wipeInventory(inventoryHead); //no memory leaks here
+			wipeInventory(inventoryHead); //no memory leaks here
 			inventoryHead = initInventory();	
 			break;
 
@@ -45,30 +45,24 @@ void handleInput(int option) {
 			char *name = (char*)malloc(sizeof(char)*20);
 			char *unit = (char*)malloc(sizeof(char)*20);
 			int price, quantity;
+			//This can also crash if text is entered for price or quantity
 			printf("Enter new item information in following format: \"name unit price quantity\"\n");
 			scanf("%s %s %d %d", name, unit, &price, &quantity); 
+			if(price <= 0 || quantity <= 0) {
+				free(name);
+				free(unit);
+				printf("Invalid price or quantity\n");
+				break;
+			}
+
 			addItem(inventoryHead, name, unit, price, quantity);
 			break;
 
 		case 3: //Remove item
-			struct Item *beforeSearcher = inventoryHead;
 			printf("Please enter the product name\n");
 			scanf("%s", searchName);
-			
-			searcher = search(inventoryHead, searchName);
-			if(searcher != NULL) {
-				//TODO make sure this works by testing
-				while(beforeSearcher->next != searcher) {
-					beforeSearcher = beforeSearcher->next;	
-				}
-				beforeSearcher->next = searcher->next;
-				free(searcher->name);
-				free(searcher->unit);
-				free(searcher);
-				printf("Product removed\n");
-			} else {
-				printf("Product not found\n");
-			}
+
+			delNodeAfter(getNodeBefore(inventoryHead, searchName));
 
 			break;
 
@@ -83,8 +77,9 @@ void handleInput(int option) {
 			printf("Please enter the product name\n");
 			scanf("%s", searchName);
 
-			searcher = search(inventoryHead, searchName);
+			searcher = getNodeBefore(inventoryHead, searchName);
 			if(searcher != NULL) {
+				searcher = searcher->next;
 				printf("Product found: %s %s %d %d\n", searcher->name, searcher->unit, searcher->price, searcher->quantity);
 			} else {
 				printf("Product not found\n");
@@ -100,8 +95,9 @@ void handleInput(int option) {
 			printf("Please enter the name of the product bought\n");
 			scanf("%s", searchName);
 
-			searcher = search(inventoryHead, searchName);
+			searcher = getNodeBefore(inventoryHead, searchName);
 			if(searcher != NULL) {
+				searcher = searcher->next;
 				searcher->quantity++;
 				printf("%s quantity increased\n", searcher->name);
 			} else {
@@ -114,13 +110,14 @@ void handleInput(int option) {
 			printf("Please enter the name of the product sold\n");
 			scanf("%s", searchName);
 
-			searcher = search(inventoryHead, searchName);
+			searcher = getNodeBefore(inventoryHead, searchName);
 			if(searcher != NULL) {
-				if(searcher->quantity > 0) {
-					searcher->quantity--;
-					printf("%s quantity decreased\n", searcher->name);
+				searcher->next->quantity--;
+				if(searcher->next->quantity <= 0) {
+					delNodeAfter(searcher);
+					printf("Product is all gone and removed from list\n");
 				} else {
-					printf("No %s %s left to sell\n", searcher->name, searcher->unit); 
+					printf("%s quantity decreased\n");
 				}
 			} else {
 				printf("Product not found\n");
@@ -130,7 +127,6 @@ void handleInput(int option) {
 
 		case 9: //save to file
 			saveToFile(inventoryHead);
-			printf("Current product information saved to file \"%s\"\n", "productSave.txt");
 	}
 }
 

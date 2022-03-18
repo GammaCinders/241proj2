@@ -3,6 +3,11 @@
 //TODO project instructions don't talk about naming the file so...
 //This will only be able to save one file though, and it will be overwritten each time
 void saveToFile(struct Item *header) {
+	if(header == NULL || header->next == NULL) {
+		printf("Nothing to save\n");
+		return;
+	}
+
 	header = header->next;
 	FILE *out = fopen("productSave.txt", "w");
 	
@@ -12,6 +17,7 @@ void saveToFile(struct Item *header) {
 	}
 	
 	fclose(out);
+	printf("Current product information saved to file \"%s\"\n", "productSave.txt");
 }
 
 /* TODO just realized this doesn't exist
