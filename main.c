@@ -12,7 +12,6 @@ struct Item *inventoryHead = NULL;
 struct Item *searcher = NULL;
 
 void main() {
-
 	printMenu();
 
 	while(chosenOption != 0) {
@@ -29,25 +28,25 @@ void main() {
 
 
 void handleInput(int option) {
-
 	if(option <= 0 || option > 9) {
 		return;
-		//TODO maybe something or just do nothing? idk
 	}
 
 	switch(option) {
 		case 1: //Create empty list
-			wipeInventory(inventoryHead); //no memory leaks here
+			wipeInventory(inventoryHead); 
 			inventoryHead = initInventory();	
+
 			break;
 
 		case 2: //Add new item
 			char *name = (char*)malloc(sizeof(char)*20);
 			char *unit = (char*)malloc(sizeof(char)*20);
 			int price, quantity;
-			//This can also crash if text is entered for price or quantity
+
 			printf("Enter new item information in following format: \"name unit price quantity\"\n");
 			scanf("%s %s %d %d", name, unit, &price, &quantity); 
+
 			if(price <= 0 || quantity <= 0) {
 				free(name);
 				free(unit);
@@ -56,6 +55,7 @@ void handleInput(int option) {
 			}
 
 			addItem(inventoryHead, name, unit, price, quantity);
+
 			break;
 
 		case 3: //Remove item
@@ -78,6 +78,7 @@ void handleInput(int option) {
 			scanf("%s", searchName);
 
 			searcher = getNodeBefore(inventoryHead, searchName);
+
 			if(searcher != NULL) {
 				searcher = searcher->next;
 				printf("Product found: %s %s %d %d\n", searcher->name, searcher->unit, searcher->price, searcher->quantity);
@@ -89,6 +90,7 @@ void handleInput(int option) {
 		
 		case 6: //Display all products
 			printInventory(inventoryHead);	
+
 			break;
 
 		case 7: //purchase a product
@@ -96,6 +98,7 @@ void handleInput(int option) {
 			scanf("%s", searchName);
 
 			searcher = getNodeBefore(inventoryHead, searchName);
+
 			if(searcher != NULL) {
 				searcher = searcher->next;
 				searcher->quantity++;
@@ -111,6 +114,7 @@ void handleInput(int option) {
 			scanf("%s", searchName);
 
 			searcher = getNodeBefore(inventoryHead, searchName);
+
 			if(searcher != NULL) {
 				searcher->next->quantity--;
 				if(searcher->next->quantity <= 0) {
@@ -127,16 +131,18 @@ void handleInput(int option) {
 
 		case 9: //save to file
 			saveToFile(inventoryHead);
+
+			break;
 	}
 }
 
 void printMenu() {
-
 	printf("\n");
 	for(int i=0; i<9; i++) {
 		char spacer = i%2 ? '\n' : '\t';
 		printf("%d :   %s%c%c", i+1, menuOptions[i], strlen(menuOptions[i]) > strlen(menuOptions[2]) ? '\0' : '\t', spacer);
 	}
-		
+
 	printf("0 :   %s\n\n", menuOptions[9]);
 }
+

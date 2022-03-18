@@ -1,5 +1,20 @@
 #include"header.h"
 
+void delNodeAfter(struct Item *node) {
+	if(node == NULL || node->next == NULL) {
+		return;
+	}
+
+
+	struct Item *toBeDel = node->next;
+	node->next = toBeDel->next;
+	
+	printf("%s deleted from list\n", toBeDel->name);
+	free(toBeDel->name);
+	free(toBeDel->unit);
+	free(toBeDel);
+}
+
 /* Should always be called first */
 struct Item *initInventory() {
 	struct Item *newHead = (struct Item*)malloc(sizeof(struct Item));
@@ -7,16 +22,16 @@ struct Item *initInventory() {
 	return newHead;
 }
 
-void delNodeAfter(struct Item *node) {
-	if(node == NULL || node->next == NULL) {
+void printInventory(struct Item *inventoryHead) {
+	if(inventoryHead == NULL || inventoryHead->next == NULL) {
+		printf("No Items to print\n");
 		return;
 	}
 
-	struct Item *toBeDel = node->next;
-	node->next = toBeDel->next;
-	free(toBeDel->name);
-	free(toBeDel->unit);
-	free(toBeDel);
+	while(inventoryHead->next != NULL) {
+		inventoryHead = inventoryHead->next;
+		printf("%s %s %d %d\n", inventoryHead->name, inventoryHead->unit, inventoryHead->price, inventoryHead->quantity);
+	}
 }
 
 void wipeInventory(struct Item *head) {
@@ -31,20 +46,9 @@ void wipeInventory(struct Item *head) {
 	free(head);
 }
 
-void printInventory(struct Item *inventoryHead) {
-	if(inventoryHead == NULL || inventoryHead->next == NULL) {
-		return;
-	}
-
-	while(inventoryHead->next != NULL) {
-		inventoryHead = inventoryHead->next;
-		printf("%s %s %d %d\n", inventoryHead->name, inventoryHead->unit, inventoryHead->price, inventoryHead->quantity);
-	}
-}
 
 
 /* ALL METHODS BELOW WILL CRASH THE PROGRAM IF CALLED BEFORE initInventory() */
-
 
 void addItem(struct Item *inventoryHead, char *name, char *unit, int price, int quantity) {
 	struct Item *newItem = (struct Item*)malloc(sizeof(struct Item));
@@ -57,10 +61,8 @@ void addItem(struct Item *inventoryHead, char *name, char *unit, int price, int 
 	inventoryHead->next = newItem;
 }
 
-//TODO make this always return the node before the desired one so that it can be used for insert and delete
 struct Item *getNodeBefore(struct Item *inventoryHead, char *productName) {
 	while(inventoryHead->next != NULL) {
-		//TODO make sure this works otherwise do '== 0'
 		if(!strcmp(productName, inventoryHead->next->name)) {
 			return inventoryHead;
 		}
