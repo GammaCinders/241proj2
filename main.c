@@ -32,6 +32,11 @@ void handleInput(int option) {
 		return;
 	}
 
+	if(option >= 2 && option <= 9 && inventoryHead == NULL) {
+		printf("Must create list with option 1 first\n");
+		return;
+	}
+
 	switch(option) {
 		case 1: //Create empty list
 			wipeInventory(inventoryHead); 
@@ -46,6 +51,13 @@ void handleInput(int option) {
 
 			printf("Enter new item information in following format: \"name unit price quantity\"\n");
 			scanf("%s %s %d %d", name, unit, &price, &quantity); 
+
+			if(getNodeBefore(inventoryHead, name) != NULL) {
+				printf("%s already exists\n");
+				free(name);
+				free(unit);
+				break;
+			}
 
 			if(price <= 0 || quantity <= 0) {
 				free(name);
